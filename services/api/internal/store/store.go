@@ -143,10 +143,10 @@ func scanImport(row pgx.Row) (Import, error) {
 	return v, nil
 }
 
-func (s *Store) ListImports(ctx context.Context, limit int) ([]Import, error) {
+func (s *Store) ListImports(ctx context.Context, limit, offset int) ([]Import, error) {
 	rows, err := s.db.Query(ctx, `SELECT `+importColumns+`
 		FROM imports i JOIN sellers s ON s.id = i.seller_id
-		ORDER BY i.created_at DESC LIMIT $1`, limit)
+		ORDER BY i.created_at DESC LIMIT $1 OFFSET $2`, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -160,6 +160,12 @@ func (s *Store) ListImports(ctx context.Context, limit int) ([]Import, error) {
 		out = append(out, v)
 	}
 	return out, rows.Err()
+}
+
+func (s *Store) CountImports(ctx context.Context) (int, error) {
+	var total int
+	err := s.db.QueryRow(ctx, `SELECT count(*) FROM imports`).Scan(&total)
+	return total, err
 }
 
 func (s *Store) GetImport(ctx context.Context, id string) (Import, error) {

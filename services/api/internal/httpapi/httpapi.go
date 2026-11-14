@@ -167,7 +167,42 @@ func (s *Server) listImports(w http.ResponseWriter, r *http.Request) {
 	if v, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil && v > 0 && v <= 500 {
 		limit = v
 	}
-	imports, err := s.store.ListImports(r.Context(), limit)
+	if r.URL.Query().Has("page") || r.URL.Query().Has("pageSize") {
+		page := 1
+		if v, err := strconv.Atoi(r.URL.Query().Get("page")); err == nil && v > 0 {
+			page = v
+		}
+		pageSize := 25
+		if v, err := strconv.Atoi(r.URL.Query().Get("pageSize")); err == nil && v > 0 && v <= 100 {
+			pageSize = v
+		}
+		total, err := s.store.CountImports(r.Context())
+		if err != nil {
+			s.internalError(w, r, err)
+			return
+		}
+		totalPages := 0
+		if total > 0 {
+			totalPages = (total + pageSize - 1) / pageSize
+			if page > totalPages {
+				page = totalPages
+			}
+		}
+		imports, err := s.store.ListImports(r.Context(), pageSize, (page-1)*pageSize)
+		if err != nil {
+			s.internalError(w, r, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{
+			"items":      imports,
+			"page":       page,
+			"pageSize":   pageSize,
+			"total":      total,
+			"totalPages": totalPages,
+		})
+		return
+	}
+	imports, err := s.store.ListImports(r.Context(), limit, 0)
 	if err != nil {
 		s.internalError(w, r, err)
 		return

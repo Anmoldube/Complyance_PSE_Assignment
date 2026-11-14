@@ -177,6 +177,44 @@ th.num {
 tbody tr:hover {
   background: #f9fafb;
 }
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.pagination,
+.page-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.button.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.button.disabled:hover {
+  background: #fff;
+  text-decoration: none;
+}
+.page-size-option {
+  min-width: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  text-align: center;
+  font-weight: 600;
+}
+.page-size-option:hover,
+.page-size-option.active {
+  border-color: var(--brand);
+  color: var(--brand);
+  text-decoration: none;
+}
 .source td,
 .source th {
   font-size: 12px;

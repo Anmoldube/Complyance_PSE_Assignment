@@ -39,6 +39,14 @@ export interface Import {
   invoices?: InvoiceSummary[];
 }
 
+export interface ImportPage {
+  items: Import[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface ValidationError {
   rule: string;
   field: string;
